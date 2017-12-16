@@ -1,7 +1,6 @@
 package chen;
 
 import java.net.MalformedURLException;
-import java.net.URISyntaxException;
 
 /**
  * java.version:Java 运行时环境版本 ;
@@ -34,7 +33,7 @@ import java.net.URISyntaxException;
  */
 
 public class SystemProperties {
-	public static void main(String[] args) throws MalformedURLException, URISyntaxException {
+	public static void main(String[] args) throws MalformedURLException {
 		System.out.println("java.home : " + System.getProperty("java.home"));
 		System.out.println("java.class.version : " + System.getProperty("java.class.version"));
 		System.out.println("java.class.path : " + System.getProperty("java.class.path"));
