@@ -1,0 +1,39 @@
+Item 1: Consider static factory methods instead of constructors（考虑以静态工厂方法代替构造函数）
+应用场景：
+见名知义：类的构造器并就不能很好说明其功能时，可以使用静态工厂对外开放的构造器以见名义，java.math.BigInteger#probablePrime就是一个经典的使用案例
+定制对象创建：定制对象创建逻辑
+静态工厂可以自定义实例的创建逻辑，比如单例对象，基于缓存的对象创建过程
+返回子类-案例一：java.util.EnumSet#noneOf，静态工厂可以在不同场景或者参数下返回不同的子类对象，这个为一个功能单位内部的对象创建提供了重要扩展方式
+返回子类-案例二：JDBC返回一个特定服务提供者子类
+
+
+风险：
+不能实例化非公开的子类：静态工厂的一个优势是基于返回子类的扩展，但若子类不公开构造器，那静态工厂就不能实例化此子类实例
+增加调试难度和代码复杂度：静态工厂可以封装对象的创建，但因此也带来阅读源码和进行代码高度的复杂度，很难定位真正被实例化的类型（特别是在创建子类的场景下）
+扩展知识
+  服务提供者框架-基本概念
+服务接口（标准）与各厂商服务接口的实现方案
+服务接口与实现方案的绑定（提供者注册API）：将某一厂商的服务接口注册到服务提供者框架中作为实现方案
+客户端获取服务实例：客户端获取注册好的一个服务实现并使用相应的服务，可考虑使用静态工厂方法实现
+服务提供者框架-案例-JDBC
+Java提出了JDBC的一组服务接口作为标准，各厂商根据标准提供相应的实现方案，用户可自行选择不同厂商提供的实现方案。
+JDBC中Connection就是其中的一个服务接口（标准），Driver是某个厂商提供的符合标准的实现方法，用户可能通过调用DriverManager.registerDrive注册指定的厂商的实现方案
+JBDC允许同时注册多个厂商的实现方案，用户可以通过DriverManager.getConnection选定其中一个厂商的实现方案
+这时在实例化JBDC服务接口的实例时相应的静态工厂就需要返回用户指定的厂商提供的实现子类
+
+
+java源码使用静态工厂方法的案例
+from：java.util.Date#from
+of:java.util.EnumSet
+valueOf:java.math.BigInteger#valueOf(int[])
+instance&getInstance：java.lang.StackWalker#getInstance()
+create&newInstance:java.lang.reflect.Array#newInstance(java.lang.Class<?>, int)
+getType:java.nio.file.Files#getFileStore
+newType：java.nio.file.Files#newBufferedReader(java.nio.file.Path)
+Type:java.util.Collections#list
+
+
+关于Java源码的静态工厂的一些说明
+静态工厂构造器提供了传统构造器以外创建实例的更灵活思路，构造器与静态工厂都应该要保留使用，在不同场景下灵活选择不必拘泥一种。
+java.nio.file.Files：是java提供一组有关操作文件的封装，其实一些跟文件有关的类，这些类实例创建就集中在Files中。这样的处理使得文件相关的操作类都集中在一个Files类，减轻了开发者对API的记忆和使用负担。
+Item 2: Consider a builder when faced with many constructor parameters（当构造函数有多个参数时，考虑改用构建器）
